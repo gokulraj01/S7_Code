@@ -8,28 +8,28 @@
 #include <string.h>
 
 #define TOKEN_MAX_SIZE 256
+#define OP_MAX_SIZE 3
 #define BUFFER_MAX_SIZE 1024
 
 #define isSubset(a,b,c) (c >= a && c <= b)
-#define isNum(c) isSubset('0','9',c)
-#define isAlpha(c) isSubset('a','z',c) && isSubSet('A','Z',c)
-
-
-const char *KEYWORDS[] = {"int", "char", "double", "float", "if", "else", "elif", "switch", "while", "for", "do"};
-const char *TOKEN_NAME[] = {"DTYPE", "DTYPE", "DTYPE", "DTYPE", "IF", "ELSE", "ELIF", "SWITCH", "WHILE", "FOR", "DO"};
+#define isNum(c) (c >= '0' && c <= '9')
+#define isAlpha(c) (c >= 'a' && c <= 'z') && (c >= 'A' && c <= 'Z')
 
 const char *KEYWORDS[] = {"int", "char", "double", "float", "if", "else", "elif", "switch", "while", "for", "do"};
-const char *TOKEN_NAME[] = {"DTYPE", "DTYPE", "DTYPE", "DTYPE", "IF", "ELSE", "ELIF", "SWITCH", "WHILE", "FOR", "DO"};
+const char *KW_NAME[] = {"DTYPE", "DTYPE", "DTYPE", "DTYPE", "IF", "ELSE", "ELIF", "SWITCH", "WHILE", "FOR", "DO"};
 
-#define KEYWORDS_LEN sizeof(KEYWORDS)/sizeof(KEYWORDS[0])
-#define KEYWORDS_LEN sizeof(KEYWORDS)/sizeof(KEYWORDS[0])
+const char *OPERATORS[] = {">", "<", ">=", "<=", "==", "!=", "||", "&&", "!", "=", "&", "|", "^", "~", "+", "-", "*", "/", "%", "(", ")"};
+const char *OP_NAME[] = {"RELOP", "RELOP", "RELOP", "RELOP", "RELOP", "RELOP", "LOP", "LOP", "LOP", "EQ", "BOP", "BOP", "BOP", "BOP", "AOP", "AOP", "AOP", "AOP", "AOP", "BR_OPEN", "BR_CLOSE"};
+
+#define KW_LEN sizeof(KEYWORDS)/sizeof(KEYWORDS[0])
+#define OP_LEN sizeof(OPERATORS)/sizeof(OPERATORS[0])
 
 void err(char* msg){
     printf("[ERROR] %s\n", msg);
     exit(EXIT_FAILURE);
 }
 
-char* token, buffer;
+char *token, *buffer;
 int ti = 0, bi = 0;
 FILE* f;
 
@@ -81,12 +81,12 @@ char acceptStr(){
         reloadBuffer();
     }
     // Did we get anything?
-    if(ki > 0){
+    if(ti > 0){
         // Was it a keyword?
         char gotKwd = 0;
-        for(int i=0; i<KEYWORDS_LEN; i++){
+        for(int i=0; i<KW_LEN; i++){
             if(!strncmp(KEYWORDS[i], token, TOKEN_MAX_SIZE)){
-                printf("<%s,%s> ", TOKEN_NAME[i], token);
+                printf("<%s,%s> ", KW_NAME[i], token);
                 gotKwd = 1;
                 break;
             }
@@ -97,7 +97,28 @@ char acceptStr(){
     }
 }
 
-char acceptOP
+char acceptOP(){
+    while(!isAlpha(buffer[bi])){
+        if(buffer[bi] != ' ' && buffer[bi] != '\t' && buffer[bi] != '\n' && buffer[bi] != ';'){
+            token[ti++] = buffer[bi++];
+            reloadBuffer();                
+        }
+        else{
+            bi++; break;
+        }
+    }
+    // Did we get anything?
+    if(ti > 0){
+        // Was it a keyword?
+        for(int i=0; i<OP_LEN; i++){
+            if(!strncmp(OPERATORS[i], token, OP_MAX_SIZE)){
+                printf("<%s,%s> ", OPERATORS[i], token);
+                return 1;
+            }
+        }
+        return 0;
+    }
+}
 
 void main(int argc, char** argv){
     if(argc < 2) err("No input file specified!!");
@@ -114,6 +135,6 @@ void main(int argc, char** argv){
         acceptComment();
         acceptNum();
         acceptStr();
-        
+        acceptOP();
     }
 }
