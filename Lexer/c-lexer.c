@@ -1,7 +1,12 @@
-// Design and implement a lexical analyzer using C language
-// to recognize valid tokens in the program. Also lexical analyzer should
-// ignore redundant spaces, tabs and new lines.
-// Ignore comment lines too.
+// Author: Gokul Raj, 235, R7A, CSE
+
+/*  Program 1 - Lexer using C
+
+    Design and implement a lexical analyzer using C language
+    to recognize valid tokens in the program. Also lexical analyzer should
+    ignore redundant spaces, tabs and new lines.
+    Ignore comment lines too.
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,7 +18,7 @@
 
 #define isSubset(a,b,c) (c >= a && c <= b)
 #define isNum(c) (c >= '0' && c <= '9')
-#define isAlpha(c) (c >= 'a' && c <= 'z') && (c >= 'A' && c <= 'Z')
+#define isAlpha(c) (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
 
 const char *KEYWORDS[] = {"int", "char", "double", "float", "if", "else", "elif", "switch", "while", "for", "do"};
 const char *KW_NAME[] = {"DTYPE", "DTYPE", "DTYPE", "DTYPE", "IF", "ELSE", "ELIF", "SWITCH", "WHILE", "FOR", "DO"};
@@ -37,8 +42,8 @@ FILE* f;
 char reloadBuffer(){
     // Input one chunk to the buffer for processing
     if(buffer[bi] == 0 || bi >= BUFFER_MAX_SIZE){
-        if(feof(f)) return 0;
-        fgets(buffer, BUFFER_MAX_SIZE, f);
+        if(fgets(buffer, BUFFER_MAX_SIZE, f) == NULL) return 0;
+        putchar('\n');
         bi = 0;
     }
     return 1;
@@ -51,7 +56,7 @@ char acceptNum(){
         reloadBuffer();
     }
     if(ti > 0){
-        token[ti] = 0;
+        token[ti++] = 0;
         printf("<NUM,%s> ", token);
         ti = 0;
         return 1;
@@ -82,17 +87,19 @@ char acceptStr(){
     }
     // Did we get anything?
     if(ti > 0){
+        token[ti++] = 0;
         // Was it a keyword?
         char gotKwd = 0;
         for(int i=0; i<KW_LEN; i++){
             if(!strncmp(KEYWORDS[i], token, TOKEN_MAX_SIZE)){
-                printf("<%s,%s> ", KW_NAME[i], token);
+                printf("<KWD:%s,%s> ", KW_NAME[i], token);
                 gotKwd = 1;
                 break;
             }
         }
         // No. So, it is identifier!!
         if(!gotKwd) printf("<ID,%s> ", token);
+        ti = 0;
         return 1;
     }
 }
@@ -109,10 +116,12 @@ char acceptOP(){
     }
     // Did we get anything?
     if(ti > 0){
+        token[ti] = 0;
+        ti = 0;
         // Was it a keyword?
         for(int i=0; i<OP_LEN; i++){
             if(!strncmp(OPERATORS[i], token, OP_MAX_SIZE)){
-                printf("<%s,%s> ", OPERATORS[i], token);
+                printf("<OP:%s,%s> ", OPERATORS[i], token);
                 return 1;
             }
         }
@@ -127,7 +136,7 @@ void main(int argc, char** argv){
     token = malloc(TOKEN_MAX_SIZE);
     buffer = malloc(BUFFER_MAX_SIZE);
     
-    while(!reloadBuffer()){
+    while(reloadBuffer()){
         char c = buffer[bi];
         if(c == ' ' || c == '\t' || c == '\n'){
             bi++; continue;
@@ -138,3 +147,28 @@ void main(int argc, char** argv){
         acceptOP();
     }
 }
+
+/*
+
+# INPUT - testfile.txt
+int a = 10;
+int b = 12;
+
+# This is a comment line which is ignored
+if(a < 10 && b != 10){
+    b = a;
+    a = 10;
+}
+
+# OUTPUT
+$ ./lexer testfile.txt
+
+<KWD:DTYPE,int> <ID,a> <OP:=,=> <NUM,10> 
+<KWD:DTYPE,int> <ID,b> <OP:=,=> <NUM,12> 
+
+
+<KWD:IF,if> <OP:(,(> <ID,a> <OP:<,<> <NUM,10> <OP:&&,&&> <ID,b> <OP:!=,!=> <NUM,10> 
+<ID,b> <OP:=,=> <ID,a> 
+<ID,a> <OP:=,=> <NUM,10>
+
+*/
