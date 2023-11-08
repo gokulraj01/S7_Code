@@ -1,0 +1,4 @@
+hello world
+
+
+this is a sample file to test lex word count
