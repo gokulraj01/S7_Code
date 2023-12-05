@@ -3,10 +3,12 @@
     Create a program implementing recursive descent parser for
     a simple calculator using the following grammar
     
-    E -> F | E+F | E-F
-    F -> G | F*G | F/G
-    G -> (E) | N
-    N -> {0..9} 
+    E  -> TE'
+    E' -> +TE' | -TE' | ε
+    T  -> FT'
+    T' -> *FT' | /FT' | ε
+    F  -> (E) | N
+    N -> {0..9}
     
 */
 
