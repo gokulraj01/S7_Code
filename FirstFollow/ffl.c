@@ -100,7 +100,7 @@ Set* follow(char c){
 }
 
 int main(int argc, char **argv){
-    printf("First&Follow\n--\n* Input without spaces\n");
+    printf("First&Follow\n--\n* Input as LHS -> RHS\n");
     printf("* A-Z are non-terminals, rest terminals, \'#\' is ε\n--\n");
     set_init(&nullable, 0);
     printf("No: of Productions: ");

@@ -9,6 +9,8 @@
 #define GRAMMAR_SIZE 8
 #define STACK_SIZE 128
 
+#define LOG(x) printf("[DBG:%d] %s\n", __LINE__, x)
+
 struct Prod{
     char L;
     char R[GRAMMAR_SIZE];
@@ -43,10 +45,11 @@ char reducible(char *s, char ind){
 
 void main(){
     char startSym;
-    grammar = malloc(sizeof(struct Prod)*n);
     printf("No: of Productions: ");
     scanf("%d", &n);
+
     // Input the grammar productions
+    grammar = malloc(sizeof(struct Prod)*n);
     for(int i=0; i<n; i++){
         scanf(" %c -> %s", &grammar[i].L, grammar[i].R);
         grammar[i].size = 0;
@@ -57,9 +60,9 @@ void main(){
     printf("Start Symbol: ");
     while(isspace(startSym = getchar()));
     getchar();
+    char *s = malloc(STACK_SIZE);
     while(1){
         // Input userstring to check grammar, reset stack
-        char *s = malloc(STACK_SIZE);
         printf(">> "); scanf("%s", s);
         top = -1;
 
