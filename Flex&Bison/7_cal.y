@@ -1,6 +1,6 @@
 /*
-    Program 7 - Basic Calculator using Flex&Bison
-    
+    Program 7 - Basic Calculator using Flex & Bison (Bison)
+    Author: Gokul Raj, 235, R7A, CSE
 */
 %{
 #include <stdio.h>
@@ -12,6 +12,7 @@ int yylex(void);
     double val;
 }
 
+%defines "calc_tok.h"
 %token <val> NUM
 %token NL
 %start s
@@ -49,3 +50,17 @@ void main(){
         yyparse();
     }
 }
+
+/*
+
+# OUTPUT
+    $ ./basic_calc
+    Bison|Flex - Basic Calculator
+    You can use +, -, *, / operators
+    >> 1+2
+    = 3.000000
+
+    >> 5/2+3.3
+    = 5.800000
+
+*/

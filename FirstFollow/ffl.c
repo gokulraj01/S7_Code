@@ -1,3 +1,7 @@
+/*
+    Program 4: Evaluate First and Follow set of any given grammar
+    Author: Gokul Raj, 235, R7A, CSE
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include "set.h"
@@ -47,7 +51,7 @@ Set* first(char c){
                 set_union(&firstSet[ind], first(grammar[i].R[j]));
                 j++;
             }
-            // If all terms nullable, then add ε to first(A), else pop ∈
+            // If all terms nullable, then add ε to first(A), else pop ε
             if(j < grammar[i].size){
                 set_union(&firstSet[ind], first(grammar[i].R[j]));
                 set_pop(&firstSet[ind], '#');
