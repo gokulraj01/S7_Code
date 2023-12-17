@@ -83,7 +83,7 @@ Set* follow(char c){
             // Find B in the RHS
             if(grammar[i].R[j] == c){
                 // If there is charecter after B, union first(β)-ε to follow(B)
-                if(j < grammar_n-1){
+                if(j < grammar[i].size-1){
                     set_union(&followSet[ind], first(grammar[i].R[j+1]));
                     // If first(β) has ε, then then follow(B) contains follow(S)
                     if(set_find(first(grammar[i].R[j+1]), '#')){
