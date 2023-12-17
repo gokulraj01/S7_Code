@@ -11,9 +11,10 @@ typedef struct {
 
 void set_init(Set* set, char name);
 
-int set_find(const Set* set, char element);
+char set_find(const Set* set, char element);
 
 void set_add(Set* set, char element);
+void set_union(Set* dest, Set* src);
 
 void set_pop(Set* set, char element);
 

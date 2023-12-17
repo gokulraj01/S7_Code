@@ -6,7 +6,7 @@ void set_init(Set* set, char name) {
     set->size = 0;
 }
 
-int set_find(const Set* set, char element) {
+char set_find(const Set* set, char element) {
     for (size_t i = 0; i < set->size; ++i)
         if (set->data[i] == element) return 1;
     return 0;
@@ -15,6 +15,11 @@ int set_find(const Set* set, char element) {
 void set_add(Set* set, char element) {
     if (set->size < SET_SIZE && !set_find(set, element))
         set->data[set->size++] = element;
+}
+
+void set_union(Set* dest, Set* src){
+    for (size_t i = 0; i < src->size; i++)
+        set_add(dest, src->data[i]);
 }
 
 void set_pop(Set* set, char element) {
@@ -27,9 +32,12 @@ void set_pop(Set* set, char element) {
 }
 
 void set_show(const Set* set) {
-    printf("Set: { ");
+    printf("%c: { ", set->name);
     for (size_t i = 0; i < set->size; ++i) {
-        printf("%c ", set->data[i]);
+        if(set->data[i] == '#')
+            printf("ε ");
+        else
+            printf("%c ", set->data[i]);
     }
     printf("}\n");
 }
