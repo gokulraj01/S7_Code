@@ -14,30 +14,10 @@ struct Prod{
 } *grammar;
 
 Set terminals, nonterminals, nullable;
-char language[SET_SIZE*2];
+char language[SET_SIZE*2], startSym;
 int grammar_n, terms_n;
 
 Set *firstSet, *followSet;
-
-/*
-// S → ɑB, add ɑ to first(B)
-for(int i=0; i<grammar_n; i++){
-    for(int j=0; j<grammar[i].size; j++){
-        if(grammar[i].R[j] == c){
-            // If there is charecter before it and it is NT, add to first
-            if(j > 0 && grammar[i].R[j] < 'A' && grammar[i].R[j] > 'Z')
-                set_add(&firstSet[ind], grammar[i].R[j-1]);
-            // Rule3: Else, first of LHS is first of current NT
-            else
-                // Find index of LHS in firstSet, then copy its elements
-                for(int k=0; k<nonterminals.size; k++)
-                    if(firstSet[k].name == grammar[i].L)
-                        for(int l=0; l<firstSet[k].size; l++)
-                            set_add(&firstSet[ind], firstSet[k].data[l]);
-        }
-    }
-}
-*/
 
 Set* first(char c){
     int ind;
@@ -82,15 +62,51 @@ Set* first(char c){
     return &firstSet[ind];
 }
 
-void follow(char c){
-    
+Set* follow(char c){
+    int ind;
+    // If already found, then return its index
+    for(int i=0; i<terms_n; i++){
+        if(language[i] == c){
+            ind = i;
+            if(followSet[i].name == c) return &followSet[ind];
+            break;
+        }
+    }
+    // Mark current set as evaluated
+    followSet[ind].name = c;
+    // If c is startSymbol, add $ to follow set
+    if(c == startSym) set_add(&followSet[ind], '$');
+
+    // Handle S → ɑBβ and S → ɑB cases
+    for(int i=0; i<grammar_n; i++){
+        for(int j=0; j<grammar[i].size; j++){
+            // Find B in the RHS
+            if(grammar[i].R[j] == c){
+                // If there is charecter after B, union first(β)-ε to follow(B)
+                if(j < grammar_n-1){
+                    set_union(&followSet[ind], first(grammar[i].R[j+1]));
+                    // If first(β) has ε, then then follow(B) contains follow(S)
+                    if(set_find(first(grammar[i].R[j+1]), '#')){
+                        set_union(&followSet[ind], follow(grammar[i].L));
+                        set_pop(&followSet[ind], '#');
+                    }
+                }
+                // If no charecter, then follow(B) contains follow(S)
+                else set_union(&followSet[ind], follow(grammar[i].L));
+            }
+        }
+    }
+    return &followSet[ind];
 }
 
 int main(int argc, char **argv){
-    printf("First&Follow\nInput without spaces |  \'#\' is ε | A-Z are non-terminals, rest terminals\n");
+    printf("First&Follow\n--\n* Input without spaces\n");
+    printf("* A-Z are non-terminals, rest terminals, \'#\' is ε\n--\n");
     set_init(&nullable, 0);
     printf("No: of Productions: ");
     scanf("%d", &grammar_n);
+    printf("Start Symbol: ");
+    scanf(" %c", &startSym);
     
     // Input the grammar productions
     grammar = malloc(sizeof(struct Prod)*grammar_n);
@@ -117,9 +133,9 @@ int main(int argc, char **argv){
     terms_n = nonterminals.size + terminals.size;
     language[0] = 0;
     
-    strncat(language, terminals.data, terminals.size);
     strncat(language, nonterminals.data, nonterminals.size);
-    firstSet = malloc(sizeof(Set)*terms_n+100);
+    strncat(language, terminals.data, terminals.size);
+    firstSet = malloc(sizeof(Set)*terms_n);
     memset(firstSet, 0, sizeof(Set)*terms_n);
     followSet = malloc(sizeof(Set)*nonterminals.size);
     memset(followSet, 0, sizeof(Set)*nonterminals.size);
@@ -128,6 +144,6 @@ int main(int argc, char **argv){
     printf("--\nFirst Sets\n");
     for(int i = 0; i < nonterminals.size; i++) set_show(first(nonterminals.data[i]));
     printf("--\nFollow Sets\n");
-    // for(int i = 0; i < nonterminals.size; i++) follow(nonterminals.data[i]);
+    for(int i = 0; i < nonterminals.size; i++) set_show(follow(nonterminals.data[i]));
     return EXIT_SUCCESS;
 }

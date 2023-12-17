@@ -32,7 +32,7 @@ void set_pop(Set* set, char element) {
 }
 
 void set_show(const Set* set) {
-    printf("%c: { ", set->name);
+    printf("%c : { ", set->name);
     for (size_t i = 0; i < set->size; ++i) {
         if(set->data[i] == '#')
             printf("ε ");
