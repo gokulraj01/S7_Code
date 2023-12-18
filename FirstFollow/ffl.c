@@ -151,3 +151,39 @@ int main(int argc, char **argv){
     for(int i = 0; i < nonterminals.size; i++) set_show(follow(nonterminals.data[i]));
     return EXIT_SUCCESS;
 }
+
+/*
+
+# OUTPUT
+    $ ./ffl
+    First&Follow
+    --
+    * Input as LHS -> RHS
+    * A-Z are non-terminals, rest terminals, '#' is ε
+    --
+    No: of Productions: 8
+    Start Symbol: E
+    E -> TX
+    X -> +TX
+    X -> #
+    T -> FY
+    Y -> *FY
+    Y -> #
+    F -> (E)
+    F -> n
+    --
+    First Sets
+    E : { ( n }
+    T : { ( n }
+    X : { + ε }
+    F : { ( n }
+    Y : { * ε }
+    --
+    Follow Sets
+    E : { $ ) }
+    T : { + $ ) }
+    X : { $ ) }
+    F : { * + $ ) }
+    Y : { + $ ) }
+
+*/

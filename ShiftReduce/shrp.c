@@ -1,4 +1,4 @@
-/* 
+/*
     Program 3: Shift-Reduce Parser
     Author: Gokul Raj, 235, R7A, CSE
 */
@@ -87,3 +87,29 @@ void main(){
             printf("[ERROR] Syntax error!!\n");
     }
 }
+
+/*
+
+# OUTPUT
+    $ ./shift_reduce
+    No: of Productions: 4
+    E -> E*E
+    E -> E+E
+    E -> (E)
+    E -> i
+    Start Symbol: E
+    >> i*i+i
+    Stack   Input   Operation
+    i       *i+i    SHIFT i
+    E       *i+i    REDUCE E->i
+    E*      i+i     SHIFT *
+    E*i     +i      SHIFT i
+    E*E     +i      REDUCE E->i
+    E*E     +i      REDUCE E->E*E
+    E+      i       SHIFT +
+    E+i             SHIFT i
+    E+E             REDUCE E->i
+    E+E             REDUCE E->E+E
+    Parsed!!
+
+*/

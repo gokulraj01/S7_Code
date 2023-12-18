@@ -2,7 +2,6 @@
     Program 13: Optimization | Constant Propogation
     Author: Gokul Raj, 235, R7A, CSE
 */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -47,7 +46,8 @@ void main(){
         // When format is a = b
         if(match == 2){
             symtab[n].name = a;
-            symtab[n].value = atoi(b);
+            if(isdigit(b[0])) symtab[n].value = atoi(b);
+            else symtab[n].value = symtab[tolower(b[0])-'a'].value;
         }
         // Else when format is a = b op c
         else if(match == 4){
@@ -62,3 +62,26 @@ void main(){
         printf("\n>> ");
     }
 }
+
+/*
+
+# OUTPUT
+    $ ./const_prop
+    Constant Propogation
+    Enter expressions
+    >> a = 12
+     ↳ a = 12
+
+    >> b = a * 5
+     ↳ b = 60
+
+    >> c = a + b
+     ↳ c = 72
+
+    >> b = c
+     ↳ b = 72
+
+    >> a = b / a
+     ↳ a = 6
+
+*/

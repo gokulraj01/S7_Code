@@ -2,14 +2,14 @@
     Program 2 - Recursive Decent Parser
     Create a program implementing recursive descent parser for
     a simple calculator using the following grammar
-    
+
     E  -> TE'
     E' -> +TE' | -TE' | ε
     T  -> FT'
     T' -> *FT' | /FT' | ε
     F  -> (E) | N
     N -> {0..9}
-    
+
 */
 
 #include <stdio.h>
@@ -75,3 +75,17 @@ void main(int argc, char **argv){
         if(!E(&ind)) printf("Parse failed!!\n");
     }
 }
+
+/*
+
+# OUTPUT
+    $ ./rec_descent
+    >> 1 + 2
+    >> 1 * 2/3
+    >> 5/6 * 7/8
+    >> )-1
+    Parse failed!!
+    >> *3+3
+    Parse failed!!
+
+*/
